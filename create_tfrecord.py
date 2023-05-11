@@ -57,41 +57,48 @@ def create_tf_example(group, path, augment=True):
         image_tf = tf.convert_to_tensor(image_np)
 
         # Apply augmentations
-        if np.random.rand() < 0.3:
-            image_tf = tf.image.random_brightness(image_tf, max_delta=0.3)
+        if np.random.rand() < 0.4:
+            image_tf = tf.image.random_brightness(image_tf, max_delta=0.4)
+            applied_ops.append('Random Brightness')
         
-        if np.random.rand() < 0.3:
-            image_tf = tf.image.random_contrast(image_tf, lower=0.5, upper=1.5)
+        if np.random.rand() < 0.4:
+            image_tf = tf.image.random_contrast(image_tf, lower=0.5, upper=2.5)
+            applied_ops.append('Random Contrast')
         
-        if np.random.rand() < 0.3:
-            image_tf = tf.image.random_saturation(image_tf, lower=0.5, upper=1.5)
+        if np.random.rand() < 0.4:
+            image_tf = tf.image.random_saturation(image_tf, lower=0.5, upper=2.)
+            applied_ops.append('Random Saturation')
         
-        if np.random.rand() < 0.3:
+        if np.random.rand() < 0.4:
             image_tf = tf.image.random_hue(image_tf, max_delta=0.3)
+            applied_ops.append('Random Hue')
         
-        if np.random.rand() < 0.3:
+        if np.random.rand() < 0.4:
             image_np = image_tf.numpy()
             seq = iaa.Sequential([
-                iaa.AdditiveGaussianNoise(scale=0.1 * 255)  # Add PCA based noise
+                iaa.AdditiveGaussianNoise(scale=0.1 * 255)
             ])
             image_np = seq(images=image_np)
+            applied_ops.append('Additive Gaussian Noise')
 
             image_tf = tf.convert_to_tensor(image_np)
 
-        if np.random.rand() < 0.3:
+        if np.random.rand() < 0.4:
             image_np = cv2.GaussianBlur(image_np, (5, 5), 0)
+            applied_ops.append('Gaussian Blur')
             image_tf = tf.convert_to_tensor(image_np)
-
-        if np.random.rand() < 0.2:
-            image_tf = tf.image.rgb_to_grayscale(image_tf)
-            image_tf = tf.image.grayscale_to_rgb(image_tf)
 
         # Normalize pixel values
         image_tf = tf.image.convert_image_dtype(image_tf, tf.float32)
         image_tf = (image_tf - 0.5) * 2
 
-        # Convert the augmented TensorFlow image back to a PIL image
-        image_np = tf.image.convert_image_dtype(image_tf, tf.uint8).numpy()
+        # Convert image back to the original color space
+        image_tf = tf.image.convert_image_dtype(image_tf, tf.float32)
+        image_tf = (image_tf - 0.5) * 2
+        image_tf = (image_tf / 2) + 0.5
+        image_tf = tf.image.convert_image_dtype(image_tf, tf.uint8)
+
+        image_np = image_tf.numpy()
         image = Image.fromarray(image_np)
 
     # Update the encoded image
