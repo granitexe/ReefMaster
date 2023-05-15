@@ -57,19 +57,15 @@ def create_tf_example(group, path, augment=True):
 
         if np.random.rand() < 0.2:
             image_tf = tf.image.random_brightness(image_tf, max_delta=0.3)
-            applied_ops.append('Random Brightness')
         
         if np.random.rand() < 0.2:
             image_tf = tf.image.random_contrast(image_tf, lower=0.5, upper=2.5)
-            applied_ops.append('Random Contrast')
         
         if np.random.rand() < 0.2:
             image_tf = tf.image.random_saturation(image_tf, lower=0.5, upper=2.)
-            applied_ops.append('Random Saturation')
         
         if np.random.rand() < 0.2:
             image_tf = tf.image.random_hue(image_tf, max_delta=0.3)
-            applied_ops.append('Random Hue')
         
         if np.random.rand() < 0.2:
             image_np = image_tf.numpy()
@@ -77,13 +73,11 @@ def create_tf_example(group, path, augment=True):
                 iaa.AdditiveGaussianNoise(scale=0.1 * 255)
             ])
             image_np = seq(images=image_np)
-            applied_ops.append('Additive Gaussian Noise')
 
             image_tf = tf.convert_to_tensor(image_np)
 
         if np.random.rand() < 0.2:
             image_np = cv2.GaussianBlur(image_np, (5, 5), 0)
-            applied_ops.append('Gaussian Blur')
             image_tf = tf.convert_to_tensor(image_np)
 
         # Normalize pixel values
