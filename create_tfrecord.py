@@ -55,7 +55,7 @@ def create_tf_example(group, path, augment=True):
         image_np = np.array(image)
         image_tf = tf.convert_to_tensor(image_np)
         
-        if np.random.rand() < 0.2:
+        if np.random.rand() < 0.3:
             shift = tf.random.uniform([], minval=-height//3, maxval=height//3, dtype=tf.int32)
             image_tf = tf.image.pad_to_bounding_box(image_tf, tf.maximum(0, shift), 0, height + tf.abs(shift), width)
             image_tf = tf.image.crop_to_bounding_box(image_tf, tf.maximum(0, -shift), 0, height, width)
@@ -63,7 +63,7 @@ def create_tf_example(group, path, augment=True):
             ymins = [y - float(shift)/height if y - float(shift)/height > 0. else 0. for y in ymins]
             ymaxs = [y - float(shift)/height if y - float(shift)/height < 1. else 1. for y in ymaxs]
 
-        if np.random.rand() < 0.2:
+        if np.random.rand() < 0.3:
             shift = tf.random.uniform([], minval=-width//3, maxval=width//3, dtype=tf.int32)
             image_tf = tf.image.pad_to_bounding_box(image_tf, 0, tf.maximum(0, shift), height, width + tf.abs(shift))
             image_tf = tf.image.crop_to_bounding_box(image_tf, 0, tf.maximum(0, -shift), height, width)
